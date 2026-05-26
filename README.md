@@ -337,12 +337,83 @@ Then set `host="http://localhost:8080"` (or the container's network address) in 
 
 ## 🚧 Roadmap
 
-- [ ] Environment variable support via `python-dotenv`
-- [ ] Support for `failed`, `skipped`, `queued` state patches
-- [ ] Batch task state patching across multiple DAG runs
-- [ ] JSON/CSV export of DAG run reports
-- [ ] Support for Airflow REST API authentication tokens
-- [ ] `--dry-run` flag for safe inspection without changes
+Upcoming features and improvements, organized by category. Contributions welcome!
+
+### 🔐 Authentication & Security
+
+- [ ] **`python-dotenv` integration** — load `AIRFLOW_USER`, `AIRFLOW_PASSWORD`, and `AIRFLOW_HOST` from a `.env` file automatically
+- [ ] **Bearer token / JWT support** — authenticate via Airflow API tokens instead of basic auth (required for some enterprise setups)
+- [ ] **Per-environment credential profiles** — store named credential sets (dev/staging/prod) in a local config file (`~/.airflow-manager/config.yaml`)
+- [ ] **Kerberos & LDAP auth support** — for organizations using enterprise Airflow deployments
+
+---
+
+### 🖥️ CLI & Developer Experience
+
+- [ ] **`argparse` / `click` CLI interface** — replace interactive prompts with proper command-line flags:
+  ```bash
+  python main.py --dag my_pipeline --run latest --task extract_data --patch-state success
+  ```
+- [ ] **`--dry-run` flag** — preview exactly which task state changes would be applied, without making any API calls
+- [ ] **`--json` output flag** — print raw API responses as formatted JSON for scripting and piping
+- [ ] **`--quiet` / `--verbose` flags** — control log output level
+- [ ] **Shell auto-completion** — tab-complete DAG names and task IDs using cached metadata
+- [ ] **Color-coded terminal output** — highlight `failed` in red, `success` in green, `running` in yellow using `colorama` or `rich`
+- [ ] **`rich` table display** — render DAG runs and task details as formatted terminal tables instead of plain text
+
+---
+
+### 🔄 State Management
+
+- [ ] **Patch to any state** — support `failed`, `skipped`, `queued`, `up_for_retry`, and `cleared` in addition to `success`
+- [ ] **Batch task patching** — patch multiple task IDs in a single command across one or many DAG runs
+- [ ] **Cascade patching** — patch a task and automatically propagate state changes to all upstream or downstream dependencies
+- [ ] **Clear task instances** — add a `clear_task()` function to reset tasks back to `None` state, triggering a re-run
+- [ ] **Trigger DAG runs** — POST a new manual DAG run directly from the CLI with optional `conf` JSON payload
+- [ ] **Pause / unpause DAGs** — toggle a DAG's active scheduling state without opening the Airflow UI
+
+---
+
+### 📊 Observability & Reporting
+
+- [ ] **JSON / CSV export** — export DAG run history and task summaries to structured files for downstream analysis
+- [ ] **Task duration statistics** — calculate average, min, and max execution time per task across recent runs
+- [ ] **Failure rate report** — show which tasks fail most frequently across all DAG runs over a time window
+- [ ] **DAG health summary** — a single-command overview showing the latest run state for every DAG in your Airflow instance
+- [ ] **Run timeline visualization** — ASCII or HTML timeline of task execution order and duration within a DAG run
+- [ ] **Log fetching** — retrieve and display task logs directly in the terminal via `GET /api/v2/.../logs`
+
+---
+
+### 🔗 Integrations
+
+- [ ] **Slack notifications** — send alerts to a Slack webhook when a DAG run fails or a patch is applied
+- [ ] **Email alerts** — SMTP-based email notifications for failure events or batch patch results
+- [ ] **PostgreSQL / SQLite logging** — persist DAG run fetch history and patch audit logs to a local database
+- [ ] **Prometheus metrics endpoint** — expose DAG run success/failure counts as Prometheus-compatible metrics
+- [ ] **GitHub Actions workflow** — ready-to-use `.github/workflows/check-dags.yml` that runs post-deploy DAG health checks in CI
+- [ ] **Apache Kafka event streaming** — publish DAG state change events to a Kafka topic for real-time downstream consumers
+
+---
+
+### 🧪 Testing & Code Quality
+
+- [ ] **Unit tests with `pytest`** — mock Airflow API responses and test all fetch/patch functions in isolation
+- [ ] **Integration test suite** — spin up a local Airflow instance via Docker and run end-to-end API tests
+- [ ] **Type annotations** — add full `typing` hints to all function signatures for better IDE support
+- [ ] **`pyproject.toml` packaging** — package as an installable Python module (`pip install airflow-dag-manager`)
+- [ ] **Pre-commit hooks** — `black`, `ruff`, and `mypy` checks enforced on every commit
+- [ ] **GitHub Actions CI** — automated linting and test runs on every pull request
+
+---
+
+### 🌐 Multi-Environment & Scalability
+
+- [ ] **Named environment profiles** — switch between `dev`, `staging`, and `prod` configs with a single flag: `--env prod`
+- [ ] **Async API calls** — use `asyncio` + `aiohttp` to fetch multiple DAGs or tasks concurrently for faster bulk operations
+- [ ] **Rate limiting & retry logic** — automatic exponential backoff on `429 Too Many Requests` and transient network errors
+- [ ] **Pagination support** — auto-paginate through all DAG runs when `total_entries` exceeds `limit`, without manual offset handling
+- [ ] **Airflow 2.x and 3.x compatibility** — detect API version at runtime and adapt requests accordingly
 
 ---
 
