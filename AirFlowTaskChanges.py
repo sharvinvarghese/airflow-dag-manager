@@ -26,6 +26,9 @@ def change_task_state(
         f"/taskInstances/{task_id}"
     )
 
+    print(f"[TaskChanges] Preparing PATCH for DAG='{dag_name}', run='{dag_run_id}', task='{task_id}', map_index={map_index}")
+    print(f"[TaskChanges] PATCH {url}")
+
     params = {
         "map_index": map_index,
         "update_mask": "success"
@@ -45,6 +48,8 @@ def change_task_state(
         "include_past": False
     }
 
+    print(f"[TaskChanges] Payload: new_state=success, map_index={map_index}")
+
     response = requests.patch(
         url,
         headers=headers,
@@ -52,6 +57,12 @@ def change_task_state(
         json=payload
     )
 
+    print(f"[TaskChanges] Response status: {response.status_code}")
+
     response.raise_for_status()
 
-    return response.json()
+    data = response.json()
+
+    print(f"[TaskChanges] PATCH successful — task '{task_id}' state updated to: {data.get('state', 'unknown')}")
+
+    return data
