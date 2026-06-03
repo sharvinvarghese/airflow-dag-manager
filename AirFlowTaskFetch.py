@@ -24,14 +24,24 @@ def get_task_instance(
         f"/taskInstances/{task_id}"
     )
 
+    print(f"[TaskFetch] Requesting task instance for DAG='{dag_name}', run='{dag_run_id}', task='{task_id}'")
+    print(f"[TaskFetch] GET {url}")
+
     headers = {
         "accept": "application/json"
     }
 
     response = requests.get(url, headers=headers)
+
+    print(f"[TaskFetch] Response status: {response.status_code}")
+
     response.raise_for_status()
 
-    return response.json()
+    data = response.json()
+
+    print(f"[TaskFetch] Task state: {data.get('state')} | Operator: {data.get('operator')} | Map index: {data.get('rendered_map_index')}")
+
+    return data
 
 
 # Example usage:
