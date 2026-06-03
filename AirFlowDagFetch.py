@@ -32,6 +32,9 @@ def get_dag_runs(
         "accept": "application/json"
     }
 
+    print(f"[DagFetch] Fetching runs for DAG='{dag_name}' | limit={limit}, offset={offset}, order_by='{order_by}'")
+    print(f"[DagFetch] GET {url}")
+
     response = requests.get(
         url,
         headers=headers,
@@ -39,8 +42,7 @@ def get_dag_runs(
         auth=("admin", "admin")  # CHANGE THIS — use env vars or a config file in production
     )
 
-    print(response.status_code)
-    print(response.text)
+    print(f"[DagFetch] Response status: {response.status_code}")
 
     response.raise_for_status()
 
@@ -51,6 +53,13 @@ def get_dag_runs(
         key=lambda x: x.get("run_after", ""),
         reverse=True
     )
+
+    total = len(data["dag_runs"])
+    print(f"[DagFetch] Retrieved {total} DAG run(s) for '{dag_name}'")
+
+    if total > 0:
+        latest = data["dag_runs"][0]
+        print(f"[DagFetch] Latest run — ID: {latest.get('dag_run_id')} | State: {latest.get('state')} | RunAfter: {latest.get('run_after')}")
 
     return data
 
